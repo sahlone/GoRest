@@ -1,0 +1,16 @@
+{
+  "write_timeout": 15,
+  "read_timeout": 15,
+  "db": {
+    "server": [
+      "mongodb:27017"
+    ],
+    "dbname": "hellofresh",
+    "timeout": 10
+  },
+  "auth": {
+    "type": "basic",
+    "username": "hellofresh",
+    "password": "hellofresh"
+  }
+}

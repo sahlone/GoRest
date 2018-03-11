@@ -1,0 +1,4 @@
+docker/docker-compose.log
+docker/go-container.log
+docker/mongo.log
+recipe-service/application.log

@@ -1,0 +1,383 @@
+swagger: "2.0"
+info:
+  description: "Rest API specification for CRUD/Search operations on recipe"
+  version: "1.0.0"
+  title: "Recipe Services"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "sahilahmadlone@gmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost"
+basePath: "/"
+schemes:
+- "http"
+tags:
+  - name: Recipe Service
+consumes:
+  - application/json; charset=utf-8
+produces:
+  - application/json; charset=utf-8
+paths:
+  /auth:
+    post:
+      summary: "Get an IDToken against credentials"
+      operationId: "getIDToken"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Credentials"
+        required: true
+        schema:
+          $ref: '#/definitions/Credentials'
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/Token'
+        '400':
+          $ref: '#/responses/400'
+        '500':
+          $ref: '#/responses/500'
+  /recipes:
+    post:
+      summary: "Create a new recipe"
+      operationId: "createRecipe"
+      security:
+        - AccessToken: []
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Recipe object that needs to be created"
+        required: true
+        schema:
+          $ref: '#/definitions/CreateUpdateRecipe'
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/Recipes'
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '500':
+          $ref: '#/responses/500'
+    get:
+      summary: "List recipe. Note that the recipe are returned acc to modified date ordering"
+      operationId: "listRecipe"
+      parameters:
+      - in: query
+        name: limit
+        type: integer
+        description: The number of items to give back in result
+        required: false
+        maximum: 100
+        minimum: 1
+        default: 10
+      - in: query
+        name: lastRecord
+        type: string
+        required: false
+        description: The Id of the last record returned. Leave it blank to get first X records.
+      responses:
+        '200':
+          description: Contains a Json array of recipes
+          schema:
+           $ref: '#/definitions/Recipes'
+        '400':
+          $ref: '#/responses/400'
+        '500':
+          $ref: '#/responses/500'
+  "/recipes/{id}":
+    get:
+      summary: "Get Recipe by Id"
+      operationId: "getRecipe"
+      parameters:
+      - in: path
+        name: id
+        type: string
+        description: The Unique Id for recipe
+        required: true
+      responses:
+        '200':
+          description: Contains a Json array of recipes
+          schema:
+           $ref: '#/definitions/Recipe'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
+    put:
+      summary: "Update Recipe by Id"
+      operationId: "updateRecipe"
+      security:
+        - AccessToken: []
+      parameters:
+      - in: path
+        name: id
+        type: string
+        description: The Unique Id for recipe
+        required: true
+      - in: "body"
+        name: "body"
+        description: "Recipe object that needs to be updated"
+        required: true
+        schema:
+          $ref: '#/definitions/CreateUpdateRecipe'
+      responses:
+        '204':
+          description: Recipe updated successfully. No Content
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
+    patch:
+      summary: "Patch Recipe Fields by Id"
+      operationId: "patchRecipe"
+      security:
+        - AccessToken: []
+      parameters:
+      - in: path
+        name: id
+        type: string
+        description: The Unique Id for recipe
+        required: true
+      - in: "body"
+        name: "body"
+        description: "Recipe Patch object that specified update fields"
+        required: true
+        schema:
+          $ref: '#/definitions/PatchRecipe'
+      responses:
+        '204':
+          description: Recipe patched successfully. No Content
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
+    delete:
+      summary: "Delete Recipe by Id"
+      operationId: "deleteRecipe"
+      security:
+        - AccessToken: []
+      parameters:
+      - in: path
+        name: id
+        type: string
+        description: The Unique Id for recipe
+        required: true
+      responses:
+        '204':
+          description: Delete successfull. No content
+        '401':
+          $ref: '#/responses/401'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
+  "/recipes/{id}/rating/{rating}":
+    put:
+      summary: "Rate Recipe by Id"
+      operationId: "rateRecipe"
+      parameters:
+      - in: path
+        name: id
+        type: string
+        description: The Unique Id for recipe
+        required: true
+      - in: path
+        name: rating
+        type: integer
+        description: The rating for Recipe [1-5]
+        required: true
+      responses:
+        '204':
+          description: Rated successfull. No content
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
+  "/recipes/search":
+    post:
+      summary: "Rate Recipe by Id"
+      operationId: "searchRecipe"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Search criteria for searching"
+        required: true
+        schema:
+          $ref: '#/definitions/SearchCriteria'
+      responses:
+        '200':
+          description: Search Recipe Based on Criteria passed in body
+        '400':
+          $ref: '#/responses/400'
+        '500':
+          $ref: '#/responses/500'
+securityDefinitions:
+  AccessToken:
+    description: |
+     A valid platform access token issued for username/password.
+     The following syntax must be used in the 'Authorization' header:
+        Bearer xxxxxx.yyyyyyy.zzzzzz
+    type: apiKey
+    name: Authorization
+    in: header
+definitions:
+  Credentials:
+    type: "object"
+    required:
+      - user
+      - password
+    properties:
+      user:
+        type: "string"
+      password:
+        type: "string"
+  Token:
+    type: "object"
+    properties:
+      token:
+        type: "string"
+  Recipe:
+    type: "object"
+    properties:
+      _id:
+        type: "string"
+        format: "UUID"
+      name:
+        type: "string"
+      preparation:
+        $ref: "#/definitions/Preparation"
+      difficulty:
+        type: "integer"
+        format: "int64"
+      vegetarian:
+        type: "boolean"
+      archive:
+        type: boolean
+      modified:
+        type: string
+        description: Last modified on time
+  CreateUpdateRecipe:
+    type: "object"
+    required: 
+      - name
+      - preparation
+    properties:
+      name:
+        type: "string"
+      preparation:
+        $ref: "#/definitions/Preparation"
+      difficulty:
+        type: "integer"
+        format: "int64"
+        default: 0
+      vegetarian:
+        type: "boolean"
+        default: false
+  PatchRecipe:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      preparation:
+        $ref: "#/definitions/PatchPreparation"
+      difficulty:
+        type: "integer"
+        format: "int64"
+      vegetarian:
+        type: "boolean"
+  Preparation:
+    type: "object"
+    required: 
+      - time
+      - total
+    properties:
+      time:
+        type: "integer"
+        format: "int64"
+        minmum: 1
+      total:
+        type: "integer"
+        format: "int64"
+        minimum: 1
+  PatchPreparation:
+    type: "object"
+    properties:
+      time:
+        type: "integer"
+        format: "int64"
+      total:
+        type: "integer"
+        format: "int64"
+  Error:
+    type: object
+    required:
+      - code
+      - description
+    properties:
+      code:
+        type: string
+        enum:
+          - 'payload.json.invalid'
+          - 'payload.fields.incorrect'
+          - 'authorization.header.invalid'
+          - 'server.error'
+      description:
+        type: string
+        description: There was an error processing the request
+  Recipes:
+    type: array
+    minItems: 0
+    maxItems: 100
+    items:
+      $ref: '#/definitions/Recipe'
+  SearchCriteria:
+    type: object
+    properties:
+      searchById:
+        type: string
+      searchByName:
+        type: string
+      searchByPrep:
+        $ref: "#/definitions/Preparation"
+      searchByDifficulty:
+        type: integer
+      isVeg:
+        type: boolean
+      isArchive:
+        type: boolean
+      start:
+        type: integer
+        type: integer
+      limit:
+        type integer
+    
+responses:
+  400:
+    description: Bad Request
+    schema:
+      $ref: '#/definitions/Error'
+  401:
+    description: Unauthorized
+  404:
+    description: Not found
+  500:
+    description: Server is unable to serve request at the moment
+    schema:
+      $ref: '#/definitions/Error'
