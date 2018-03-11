@@ -1,0 +1,25 @@
+version: '2'
+services:
+  go:
+    image: golang:1.8-alpine
+    ports:
+      - "9000:9000"
+    links:
+      - mongodb
+    stdin_open: true
+    tty: true
+    environment:
+      PORT: '9000'
+      DEBUG: 'true'
+      CONFIG: '/go/src/github.com/hellofreshdevtests/sahilahmadlone-api-test/resources/config.json'
+    volumes:
+      - ./../../../:/go/src
+    working_dir: /go/src/github.com/hellofreshdevtests/sahilahmadlone-api-test/recipe-service/
+    entrypoint: go run application.go
+
+  mongodb:
+    image: mvertes/alpine-mongo:3.2.3
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+
