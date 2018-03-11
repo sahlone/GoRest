@@ -1,8 +1,4 @@
-# HelloFresh Senior Backend Developer Test
-
-Hello and thanks for giving me opportunity to try this out.
-This is my first attempt a building GO rest service
-Based on my previous experience with REST services I have tried my best to represet the idea
+# Go Rest Service
 
 ####API Spec
 - The OpenAPI spec file which describes the reset services is in resource folder (RecipeService.yaml).
@@ -52,11 +48,11 @@ Based on my previous experience with REST services I have tried my best to repre
 - To change the port for the service please provide the `PORT` env variable to the container.
 - The startup script will output logs from the container to the current bash session for analysis
 
-#### STOP 
+####STOP 
 - To stop the containers the startup script has multiple options to get going
 - Execute the startup script with `down` option
 
-####Logs
+#### Logs
  - Logs can be found under `application.log` in the go executable path
  - At the same time the logs are output for you when the containers start
  - The startup script also help to accumulate all the logs from mongodb and server container into `docker-compose.log`.
@@ -64,7 +60,7 @@ Based on my previous experience with REST services I have tried my best to repre
  - Degug level for logging debug info can be controlled using environment variable DEBUG
   `$ export DEBUG=True`
   
-####Authentication
+#### Authentication
 - The authentication approach used is JOSE:Javascript Object Signing and Encryption set of standards
 - This is the implementation for providing a simple implementation of Auth0 spec also know as JOSE Javascript Object Signing and Encryption set of standards
 - The signing is done using static unprotected key using HMAC256
